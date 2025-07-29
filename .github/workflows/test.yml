@@ -35,6 +35,7 @@ jobs:
 
       - name: run playwright tests
         run: npx nx e2e my-project-e2e
+        continue-on-error: true
       - name: run tests again to generate screenshots
         run: npx nx e2e my-project-e2e
     
