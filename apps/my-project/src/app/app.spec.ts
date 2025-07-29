@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
-import { NxWelcome } from './nx-welcome';
+import { Hero } from '@my-project/ui';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App, NxWelcome],
+      imports: [App, Hero],
     }).compileComponents();
   });
 
@@ -13,8 +13,6 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain(
-      'Welcome my-project'
-    );
+    expect(compiled.querySelector('h1')?.textContent).toContain('Welcome demo');
   });
 });
