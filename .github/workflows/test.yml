@@ -88,6 +88,15 @@ jobs:
         #     cp -r "$dir" "$dest"
         #   done
         #run: find /tmp/snapshots -type d -name "*-snapshots" -exec bash -c 'mkdir -p $(dirname {}) && cp -r {}/* $(dirname {})/' \;
+       
+      - name: clean up 22222
+        run: |
+            pwd
+            ls -la
+            cat nx.json || echo "nx.json not found"
+            npx nx show projects || echo "No projects found"
+
+
 
       - name: run tests on PR branch
         run: npx nx e2e my-project-e2e
