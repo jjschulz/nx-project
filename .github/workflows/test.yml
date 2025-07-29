@@ -43,11 +43,15 @@ jobs:
         run: |
             rm -rf /tmp/snapshots
             mkdir -p /tmp/snapshots
-            find . -type d -name "*snapshots" | while read dir; do
-                dest="/tmp/snapshots/$dir"
-                mkdir -p "$(dirname "$dest")"
-                cp -r "$dir" "$dest"
-            done
+            rsync -a --include='*/' --include='*-snapshots' --exclude='*' . /tmp/snapshots/
+        # run: |
+        #     rm -rf /tmp/snapshots
+        #     mkdir -p /tmp/snapshots
+        #     find . -type d -name "*snapshots" | while read dir; do
+        #         dest="/tmp/snapshots/$dir"
+        #         mkdir -p "$(dirname "$dest")"
+        #         cp -r "$dir" "$dest"
+        #     done
      #add run command
     #     run: mkdir -p /tmp/snapshots
     #   - run: find . -type d -name "*-snapshots" -exec bash -c 'mkdir -p /tmp/snapshots/$(dirname {}) && cp -r {}/* /tmp/snapshots/$(dirname {})/' \;
@@ -66,11 +70,13 @@ jobs:
 # add run command
       - name: find screenshots folder
         run: |
-          find /tmp/snapshots -type d -name "*snapshots" | while read dir; do
-            dest="${dir#/tmp/snapshots/}"
-            mkdir -p "$(dirname "$dest")"
-            cp -r "$dir" "$dest"
-          done
+            rsync -a --delete /tmp/snapshots/ ./
+        # run: |
+        #   find /tmp/snapshots -type d -name "*snapshots" | while read dir; do
+        #     dest="${dir#/tmp/snapshots/}"
+        #     mkdir -p "$(dirname "$dest")"
+        #     cp -r "$dir" "$dest"
+        #   done
         #run: find /tmp/snapshots -type d -name "*-snapshots" -exec bash -c 'mkdir -p $(dirname {}) && cp -r {}/* $(dirname {})/' \;
 
       - name: run tests on PR branch
