@@ -18,7 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          filter: tree:0
           fetch-depth: 0
           #checkout main branch
           ref: main
@@ -59,7 +58,6 @@ jobs:
       - name: checkout current branch
         uses: actions/checkout@v4
         with:
-          filter: tree:0
           fetch-depth: 0
           ref: ${{ github.head_ref }}
 
