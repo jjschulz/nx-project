@@ -40,10 +40,15 @@ jobs:
         run: npx nx e2e my-project-e2e
     
       - name: store reference screenshots
-        #add run command
-        run: mkdir -p /tmp/snapshots
-      - run: find . -type d -name "*-snapshots" -exec bash -c 'mkdir -p /tmp/snapshots/$(dirname {}) && cp -r {}/* /tmp/snapshots/$(dirname {})/' \;
-        
+        run: |
+            mkdir -p /tmp/snapshots
+            find . -type d -name "*snapshots" | while read dir; do
+                mkdir -p "tmp/snapshots/$(dirname "$dir")"
+                cp -r "$dir" "tmp/snapshots/$(dirname "$dir")/"
+            done
+     #add run command
+    #     run: mkdir -p /tmp/snapshots
+    #   - run: find . -type d -name "*-snapshots" -exec bash -c 'mkdir -p /tmp/snapshots/$(dirname {}) && cp -r {}/* /tmp/snapshots/$(dirname {})/' \;
 
       - name: checkout current branch
         uses: actions/checkout@v4
@@ -58,7 +63,12 @@ jobs:
     
 # add run command
       - name: find screenshots folder
-        run: find /tmp/snapshots -type d -name "*-snapshots" -exec bash -c 'mkdir -p $(dirname {}) && cp -r {}/* $(dirname {})/' \;
+        run: |
+          find /tmp/snapshots -type d -name "*snapshots" | while read dir; do
+            mkdir -p "$(dirname "$dir")"
+            cp -r "$dir" "$(dirname "$dir")/"
+          done
+        #run: find /tmp/snapshots -type d -name "*-snapshots" -exec bash -c 'mkdir -p $(dirname {}) && cp -r {}/* $(dirname {})/' \;
 
       - name: run tests on PR branch
         run: npx nx e2e my-project-e2e
