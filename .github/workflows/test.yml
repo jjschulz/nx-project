@@ -41,6 +41,7 @@ jobs:
     
       - name: store reference screenshots
         run: |
+            rm -rf /tmp/snapshots
             mkdir -p /tmp/snapshots
             find . -type d -name "*snapshots" | while read dir; do
                 dest="/tmp/snapshots/$dir"
