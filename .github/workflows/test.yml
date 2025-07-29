@@ -1,0 +1,82 @@
+# Under which project should the actual testing be done? 
+# Maybe all of them, because it depends on what branch someone is editing
+
+name: test
+#target brancvh: main, source branch: current working branch
+on:
+  pull_request:
+    branches:
+        - main
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: tree:0
+          fetch-depth: 0
+          #checkout main branch
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: install dependencies
+        run: npm install
+
+      - name: run playwright tests
+        run: npx nx e2e my-project-e2e
+      - name: run tests again to generate screenshots
+        run: npx nx e2e my-project-e2e
+    
+      - name: store reference screenshots
+        #add run command
+        run: mkdir -p /tmp/snapshots
+      - run: find . -type d -name "*-snapshots" -exec bash -c 'mkdir -p /tmp/snapshots/$(dirname {}) && cp -r {}/* /tmp/snapshots/$(dirname {})/' \;
+        
+
+      - name: checkout current branch
+        uses: actions/checkout@v4
+        with:
+          filter: tree:0
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - name: install dependencies on PR branch
+        run: npm install
+
+    
+# add run command
+      - name: find screenshots folder
+        run: find /tmp/snapshots -type d -name "*-snapshots" -exec bash -c 'mkdir -p $(dirname {}) && cp -r {}/* $(dirname {})/' \;
+
+      - name: run tests on PR branch
+        run: npx nx e2e my-project-e2e
+
+    #handle pass or failure
+      - name: handle results
+        if: failure()
+        run: echo "Tests failed, please check the screenshots in /tmp/snapshots"
+
+      
+
+        #TODO: install dependencies
+        #run e2e twice to get the screenshots in MAIN/target branch
+        #then store the screenshots somehow, and checkout the current branch
+        #and run the e2e tests again to compare the screenshots
+    #   - run: npx nx e2e my-project-e2e
+      
+    #   - run: npm ci --legacy-peer-deps
+    #   - run: npx playwright install --with-deps
+
+    #   - run: npx nx run-many -t lint test build e2e
+
+    #   - run: npx nx fix-ci
+    #     if: always()

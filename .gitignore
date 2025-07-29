@@ -33,6 +33,7 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+apps/my-project-e2e/src/example.spec.ts-snapshots
 
 # System Files
 .DS_Store
