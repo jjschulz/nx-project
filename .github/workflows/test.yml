@@ -61,17 +61,18 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
         
+
+      - name: install dependencies on PR branch
+        run: |
+            rm -rf node-modules
+            npm install
+        
       - name: clean up
         run: |
             pwd
             ls -la
             cat nx.json || echo "nx.json not found"
             npx nx show projects || echo "No projects found"
-
-      - name: install dependencies on PR branch
-        run: |
-            rm -rf node-modules
-            npm install
 
     
 # add run command
