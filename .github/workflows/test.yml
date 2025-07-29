@@ -43,8 +43,9 @@ jobs:
         run: |
             mkdir -p /tmp/snapshots
             find . -type d -name "*snapshots" | while read dir; do
-                mkdir -p "tmp/snapshots/$(dirname "$dir")"
-                cp -r "$dir" "tmp/snapshots/$(dirname "$dir")/"
+                dest="/tmp/snapshots/$dir"
+                mkdir -p "$(dirname "$dest")"
+                cp -r "$dir" "dest"
             done
      #add run command
     #     run: mkdir -p /tmp/snapshots
@@ -65,8 +66,9 @@ jobs:
       - name: find screenshots folder
         run: |
           find /tmp/snapshots -type d -name "*snapshots" | while read dir; do
-            mkdir -p "$(dirname "$dir")"
-            cp -r "$dir" "$(dirname "$dir")/"
+            dest="${dir#/tmp/snapshots/}"
+            mkdir -p "$(dirname "$dest")"
+            cp -r "$dir" "$dest"
           done
         #run: find /tmp/snapshots -type d -name "*-snapshots" -exec bash -c 'mkdir -p $(dirname {}) && cp -r {}/* $(dirname {})/' \;
 
