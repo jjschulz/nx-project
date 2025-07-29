@@ -64,6 +64,8 @@ jobs:
 
       - name: install dependencies on PR branch
         run: |
+            git reset --hard
+            git clean -fdx
             rm -rf node-modules
             npm install
         
