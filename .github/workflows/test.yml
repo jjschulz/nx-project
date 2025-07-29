@@ -46,7 +46,7 @@ jobs:
             find . -type d -name "*snapshots" | while read dir; do
                 dest="/tmp/snapshots/$dir"
                 mkdir -p "$(dirname "$dest")"
-                cp -r "$dir" "dest"
+                cp -r "$dir" "$dest"
             done
      #add run command
     #     run: mkdir -p /tmp/snapshots
