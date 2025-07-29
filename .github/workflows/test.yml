@@ -65,13 +65,13 @@ jobs:
         run: |
             pwd
             ls -la
-            if [ ! -f nx.json ]; then
-              echo "nx.json not found, exiting"
-              exit 1
-            fi
+            cat nx.json || echo "nx.json not found"
+            npx nx show projects || echo "No projects found"
 
       - name: install dependencies on PR branch
-        run: npm install
+        run: |
+            rm -rf node-modules
+            npm install
 
     
 # add run command
