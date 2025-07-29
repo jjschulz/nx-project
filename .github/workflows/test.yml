@@ -30,6 +30,8 @@ jobs:
 
       - name: install dependencies
         run: npm install
+      - name: install playwright
+        run: npx playwright install --with-deps
 
       - name: run playwright tests
         run: npx nx e2e my-project-e2e
