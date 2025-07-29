@@ -60,6 +60,15 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
+        
+      - name: clean up
+        run: |
+            pwd
+            ls -la
+            if [ ! -f nx.json ]; then
+              echo "nx.json not found, exiting"
+              exit 1
+            fi
 
       - name: install dependencies on PR branch
         run: npm install
