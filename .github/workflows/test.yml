@@ -80,7 +80,8 @@ jobs:
 # add run command
       - name: find screenshots folder
         run: |
-            rsync -a --delete /tmp/snapshots/ ./
+            rsync -a /tmp/snapshots/ ./
+
         # run: |
         #   find /tmp/snapshots -type d -name "*snapshots" | while read dir; do
         #     dest="${dir#/tmp/snapshots/}"
@@ -106,18 +107,3 @@ jobs:
         if: failure()
         run: echo "Tests failed, please check the screenshots in /tmp/snapshots"
 
-      
-
-        #TODO: install dependencies
-        #run e2e twice to get the screenshots in MAIN/target branch
-        #then store the screenshots somehow, and checkout the current branch
-        #and run the e2e tests again to compare the screenshots
-    #   - run: npx nx e2e my-project-e2e
-      
-    #   - run: npm ci --legacy-peer-deps
-    #   - run: npx playwright install --with-deps
-
-    #   - run: npx nx run-many -t lint test build e2e
-
-    #   - run: npx nx fix-ci
-    #     if: always()
