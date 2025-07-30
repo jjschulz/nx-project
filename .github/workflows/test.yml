@@ -79,15 +79,15 @@ jobs:
     
 # add run command
       - name: find screenshots folder
-        run: |
-            rsync -a /tmp/snapshots/ ./
-
         # run: |
-        #   find /tmp/snapshots -type d -name "*snapshots" | while read dir; do
-        #     dest="${dir#/tmp/snapshots/}"
-        #     mkdir -p "$(dirname "$dest")"
-        #     cp -r "$dir" "$dest"
-        #   done
+        #     rsync -a /tmp/snapshots/ ./
+
+        run: |
+          find /tmp/snapshots -type d -name "*snapshots" | while read dir; do
+            dest="${dir#/tmp/snapshots/}"
+            mkdir -p "$(dirname "$dest")"
+            cp -r "$dir" "${dirname "$dest"}"
+          done
         #run: find /tmp/snapshots -type d -name "*-snapshots" -exec bash -c 'mkdir -p $(dirname {}) && cp -r {}/* $(dirname {})/' \;
        
       - name: clean up 22222
