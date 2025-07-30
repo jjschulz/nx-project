@@ -79,6 +79,7 @@ jobs:
     
 # add run command
       - name: find screenshots folder
+        shell: bash
         # run: |
         #     rsync -a /tmp/snapshots/ ./
 
