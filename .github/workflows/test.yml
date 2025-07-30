@@ -65,8 +65,7 @@ jobs:
       - name: install dependencies on PR branch
         run: |
             git reset --hard
-            git clean -fdx
-            rm -rf node-modules
+            rm -rf dist node-modules
             npm install
         
       - name: clean up
@@ -105,5 +104,7 @@ jobs:
     #handle pass or failure
       - name: handle results
         if: failure()
-        run: echo "Tests failed, please check the screenshots in /tmp/snapshots"
+        run: |
+          echo "Tests failed"
+          find . -name "*-actual.png" || echo "No actual screenshots found"
 
