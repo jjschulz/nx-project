@@ -97,6 +97,12 @@ jobs:
             npx nx show projects || echo "No projects found"
 
 
+      - name: see where snapshot folders are
+        run: |
+          echo "snapshot directories:"
+          find apps/my-project-e2e/src/ -type d -name "*-snapshots" || echo "No snapshot directories found"
+          echo "snapshot image files:"
+          find apps/my-project-e2e/src/ -type f -name "*.png" || echo "No screenshots found"
 
       - name: run tests on PR branch
         run: npx nx e2e my-project-e2e
