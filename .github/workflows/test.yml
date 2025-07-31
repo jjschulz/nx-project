@@ -32,14 +32,14 @@ jobs:
       - name: install playwright
         run: npx playwright install --with-deps
 
-      - name: what directory am i in
-        run: pwd
+      - name: change directory
+        run: cd apps/my-project-e2e
 
       - name: run playwright tests
-        run: npx nx e2e my-project-e2e
+        run: npx playwright test
         continue-on-error: true
       - name: run tests again to generate screenshots
-        run: npx nx e2e my-project-e2e
+        run: npx playwright test
 
       - name: try to find where screenshots are stored
         run: |
@@ -124,7 +124,9 @@ jobs:
           find apps/my-project-e2e/src/ -type f -name "*.png" || echo "No screenshots found"
 
       - name: run tests on PR branch
-        run: npx nx e2e my-project-e2e
+        run: |
+          cd apps/my-project-e2e
+          npx nx e2e my-project-e2e
 
     #handle pass or failure
       - name: handle results
