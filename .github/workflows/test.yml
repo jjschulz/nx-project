@@ -41,7 +41,7 @@ jobs:
       - name: try to find where screenshots are stored
         run: |
           echo "Finding snapshot directories:"
-          find . -type d -name "*-snapshots" -print
+          find . -type d -name "*-snapshots" -print || echo "No snapshot directories found"
           cd apps
           ls
           cd ..
