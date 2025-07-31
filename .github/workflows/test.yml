@@ -40,7 +40,7 @@ jobs:
         continue-on-error: true
       - name: run tests again to generate screenshots
         run: |
-          pwd
+          cd apps/my-project-e2e
           npx playwright test
 
       - name: try to find where screenshots are stored

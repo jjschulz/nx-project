@@ -24,7 +24,7 @@ export default defineConfig({
   },
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'npx nx run my-project:serve',
+    command: 'npm run start:my-project',
     url: 'http://localhost:4200',
     reuseExistingServer: true,
     cwd: workspaceRoot,
