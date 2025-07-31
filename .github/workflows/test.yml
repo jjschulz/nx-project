@@ -42,7 +42,8 @@ jobs:
         run: |
             rm -rf /tmp/snapshots
             mkdir -p /tmp/snapshots
-            rsync -a --include='*/' --include='*-snapshots' --exclude='*' . /tmp/snapshots/
+            mv apps/my-project-e2e/src/example.spec.ts-snapshots /tmp/snapshots/ || echo "No snapshot directories found"
+          # rsync -a --include='*/' --include='*-snapshots' --exclude='*' . /tmp/snapshots/
         # run: |
         #     rm -rf /tmp/snapshots
         #     mkdir -p /tmp/snapshots
@@ -71,7 +72,7 @@ jobs:
       - name: clean up
         run: |
             pwd
-            ls -la --ignore=node_modules
+            ls -la
             cat nx.json || echo "nx.json not found"
             npx nx show projects || echo "No projects found"
 
@@ -79,7 +80,10 @@ jobs:
 # add run command
       - name: find screenshots folder
         run: |
-            rsync -av /tmp/snapshots/ ./
+          echo "Finding snapshot directories:"
+          find apps/my-project-e2e/src/ -type d -name "*-snapshots" || echo "No snapshot directories found"
+          mv /tmp/snapshots/* apps/my-project-e2e/src/example.spec.ts-snapshots || echo "No snapshots to move"
+        # rsync -av /tmp/snapshots/ ./
 
         # run: |
         #   find /tmp/snapshots -type d -name "*snapshots" | while read dir; do
@@ -92,7 +96,7 @@ jobs:
       - name: clean up 22222
         run: |
             pwd
-            ls -la --ignore=node_modules
+            ls -la
             cat nx.json || echo "nx.json not found"
             npx nx show projects || echo "No projects found"
 
