@@ -43,7 +43,7 @@ jobs:
             rm -rf apps/tmp/snapshots
             mkdir -p apps/tmp/snapshots
             mv apps/my-project-e2e/src/example.spec.ts-snapshots apps/tmp/snapshots/ || echo "No snapshot 3directories found"
-            find . -type d -name "*-snapshots" || echo "No snapshot directories found"
+            find . -type d -name "*-snapshots" -print || echo "No snapshot directories found"
           # rsync -a --include='*/' --include='*-snapshots' --exclude='*' . /tmp/snapshots/
         # run: |
         #     rm -rf /tmp/snapshots
@@ -83,7 +83,7 @@ jobs:
         run: |
           echo "Finding snapshot directories:"
           mv apps/tmp/snapshots/* apps/my-project-e2e/src/example.spec.ts-snapshots || echo "No snapshots to move"
-          find apps/my-project-e2e/src/ -type d -name "*-snapshots" || echo "No snapshot directories found"
+          find apps/my-project-e2e/src/ -type d -name "*-snapshots" -print || echo "No snapshot directories found"
           cd apps
           ls
           cd ..
