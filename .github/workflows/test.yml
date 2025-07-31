@@ -42,16 +42,17 @@ jobs:
         run: |
           echo "Finding snapshot directories:"
           find . -type d -name "*-snapshots" -print
-          echo "Finding snapshot image files:"
-          find . -type f -name "*.png" -print
+          cd apps
+          ls
+          cd ..
     
       - name: store reference screenshots
         run: |
-            rm -rf apps/tmp/snapshots
-            mkdir -p apps/tmp/snapshots
-            mv apps/my-project-e2e/src/example.spec.ts-snapshots apps/tmp/snapshots/ || echo "No snapshot 3directories found"
-            find . -type d -name "*-snapshots" -print || echo "No snapshot directories found"
-          # rsync -a --include='*/' --include='*-snapshots' --exclude='*' . /tmp/snapshots/
+            rm -rf /tmp/snapshots
+            mkdir -p /tmp/snapshots
+            rsync -a --include='*/' --include='*-snapshots' --exclude='*' . /tmp/snapshots/
+        # mv apps/my-project-e2e/src/example.spec.ts-snapshots /tmp/snapshots/ || echo "No snapshot 3directories found"
+           # find . -type d -name "*-snapshots" -print || echo "No snapshot directories found"
         # run: |
         #     rm -rf /tmp/snapshots
         #     mkdir -p /tmp/snapshots
@@ -89,7 +90,7 @@ jobs:
       - name: find screenshots folder
         run: |
           echo "Finding snapshot directories:"
-          mv apps/tmp/snapshots/* apps/my-project-e2e/src/example.spec.ts-snapshots || echo "No snapshots to move"
+          mv /tmp/snapshots/* apps/my-project-e2e/src/example.spec.ts-snapshots || echo "No snapshots to move"
           find apps/my-project-e2e/src/ -type d -name "*-snapshots" -print || echo "No snapshot directories found"
           cd apps
           ls
