@@ -39,7 +39,9 @@ jobs:
           npx playwright test
         continue-on-error: true
       - name: run tests again to generate screenshots
-        run: npx playwright test
+        run: |
+          pwd
+          npx playwright test
 
       - name: try to find where screenshots are stored
         run: |
