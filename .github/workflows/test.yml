@@ -42,7 +42,7 @@ jobs:
         run: |
             rm -rf /tmp/snapshots
             mkdir -p /tmp/snapshots
-            mv apps/my-project-e2e/src/example.spec.ts-snapshots /tmp/snapshots/ || echo "No snapshot directories found"
+            mv apps/my-project-e2e/src/example.spec.ts-snapshots apps/tmp/snapshots/ || echo "No snapshot directories found"
           # rsync -a --include='*/' --include='*-snapshots' --exclude='*' . /tmp/snapshots/
         # run: |
         #     rm -rf /tmp/snapshots
@@ -81,8 +81,11 @@ jobs:
       - name: find screenshots folder
         run: |
           echo "Finding snapshot directories:"
+          mv apps/tmp/snapshots/* apps/my-project-e2e/src/example.spec.ts-snapshots || echo "No snapshots to move"
           find apps/my-project-e2e/src/ -type d -name "*-snapshots" || echo "No snapshot directories found"
-          mv /tmp/snapshots/* apps/my-project-e2e/src/example.spec.ts-snapshots || echo "No snapshots to move"
+          cd apps
+          ls
+          cd ..
         # rsync -av /tmp/snapshots/ ./
 
         # run: |
