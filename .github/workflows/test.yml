@@ -71,7 +71,7 @@ jobs:
       - name: clean up
         run: |
             pwd
-            ls -la
+            ls -la --ignore=node_modules
             cat nx.json || echo "nx.json not found"
             npx nx show projects || echo "No projects found"
 
@@ -92,7 +92,7 @@ jobs:
       - name: clean up 22222
         run: |
             pwd
-            ls -la
+            ls -la --ignore=node_modules
             cat nx.json || echo "nx.json not found"
             npx nx show projects || echo "No projects found"
 
