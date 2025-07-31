@@ -32,11 +32,11 @@ jobs:
       - name: install playwright
         run: npx playwright install --with-deps
 
-      - name: change directory
-        run: cd apps/my-project-e2e
 
       - name: run playwright tests
-        run: npx playwright test
+        run: |
+          cd apps/my-project-e2e
+          npx playwright test
         continue-on-error: true
       - name: run tests again to generate screenshots
         run: npx playwright test
