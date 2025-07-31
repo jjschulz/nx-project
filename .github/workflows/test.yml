@@ -32,6 +32,9 @@ jobs:
       - name: install playwright
         run: npx playwright install --with-deps
 
+      - name: what directory am i in
+        run: pwd
+
       - name: run playwright tests
         run: npx nx e2e my-project-e2e
         continue-on-error: true
