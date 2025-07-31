@@ -37,6 +37,13 @@ jobs:
         continue-on-error: true
       - name: run tests again to generate screenshots
         run: npx nx e2e my-project-e2e
+
+      - name: try to find where screenshots are stored
+        run: |
+          echo "Finding snapshot directories:"
+          find . -type d -name "*-snapshots" -print
+          echo "Finding snapshot image files:"
+          find . -type f -name "*.png" -print
     
       - name: store reference screenshots
         run: |
