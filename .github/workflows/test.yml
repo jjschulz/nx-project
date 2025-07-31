@@ -42,8 +42,9 @@ jobs:
         run: |
           echo "Finding snapshot directories:"
           find . -type d -name "*-snapshots" -print
-          echo "Finding snapshot image files:"
-          find . -type f -name "*.png" -print
+          cd apps
+          ls
+          cd ..
     
       - name: store reference screenshots
         run: |
