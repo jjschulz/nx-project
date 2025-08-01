@@ -34,8 +34,6 @@ jobs:
 
       - name: what directory am i in
         run: pwd
-      - name: what directory am i in
-        run: pwd
 
       - name: run playwright tests
         run: npx nx e2e my-project-e2e
@@ -51,11 +49,11 @@ jobs:
           ls
           cd ..
     
-      # - name: store reference screenshots
-      #   run: |
-      #       rm -rf /tmp/snapshots
-      #       mkdir -p /tmp/snapshots
-      #       rsync -a --include='*/' --include='*-snapshots' --exclude='*' . /tmp/snapshots/
+      - name: store reference screenshots
+        run: |
+            rm -rf /tmp/snapshots
+            mkdir -p /tmp/snapshots
+            rsync -a --include='*/' --include='*-snapshots' --exclude='*' . /tmp/snapshots/
         # mv apps/my-project-e2e/src/example.spec.ts-snapshots /tmp/snapshots/ || echo "No snapshot 3directories found"
            # find . -type d -name "*-snapshots" -print || echo "No snapshot directories found"
         # run: |
@@ -92,14 +90,14 @@ jobs:
 
     
 # add run command
-      # - name: find screenshots folder
-      #   run: |
-      #     echo "Finding snapshot directories:"
-      #     mv /tmp/snapshots/* apps/my-project-e2e/src/example.spec.ts-snapshots || echo "No snapshots to move"
-      #     find apps/my-project-e2e/src/ -type d -name "*-snapshots" -print || echo "No snapshot directories found"
-      #     cd apps
-      #     ls
-      #     cd ..
+      - name: find screenshots folder
+        run: |
+          echo "Finding snapshot directories:"
+          mv /tmp/snapshots/* apps/my-project-e2e/src/example.spec.ts-snapshots || echo "No snapshots to move"
+          find apps/my-project-e2e/src/ -type d -name "*-snapshots" -print || echo "No snapshot directories found"
+          cd apps
+          ls
+          cd ..
         # rsync -av /tmp/snapshots/ ./
 
         # run: |
@@ -118,7 +116,7 @@ jobs:
             npx nx show projects || echo "No projects found"
 
 
-      - name: see where snapshot folders are located
+      - name: see where snapshot folders are
         run: |
           echo "snapshot directories:"
           find apps/my-project-e2e/src/ -type d -name "*-snapshots" || echo "No snapshot directories found"
@@ -127,7 +125,6 @@ jobs:
 
       - name: run tests on PR branch
         run: npx nx e2e my-project-e2e
-
 
     #handle pass or failure
       - name: handle results
