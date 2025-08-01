@@ -48,6 +48,14 @@ jobs:
           cd apps
           ls
           cd ..
+
+      - name: upload snapshots from main
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshots-main
+          path: |
+            apps/my-project-e2e/src/example.spec.ts-snapshots
     
       # - name: store reference screenshots
       #   run: |
@@ -113,6 +121,12 @@ jobs:
             ls -la
             cat nx.json || echo "nx.json not found"
             npx nx show projects || echo "No projects found"
+      
+      - name: download snapshots from main
+        uses: actions/download-artifact@v4
+        with:
+          name: snapshots-main
+          path: apps/my-project-e2e/src/example.spec.ts-snapshots
 
 
       - name: see where snapshot folders are located
