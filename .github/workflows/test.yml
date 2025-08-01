@@ -34,8 +34,6 @@ jobs:
 
       - name: what directory am i in
         run: pwd
-      - name: what directory am i in
-        run: pwd
 
       - name: run playwright tests
         run: npx nx e2e my-project-e2e
@@ -77,11 +75,11 @@ jobs:
           ref: ${{ github.head_ref }}
         
 
-      - name: install dependencies on PR branch
-        run: |
-            git reset --hard
-            rm -rf dist node-modules
-            npm install
+      # - name: install dependencies on PR branch
+      #   run: |
+      #       git reset --hard
+      #       rm -rf dist node-modules
+      #       npm install
         
       - name: clean up
         run: |
