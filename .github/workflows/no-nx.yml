@@ -36,13 +36,10 @@ jobs:
         run: pwd
 
       - name: run playwright tests
-        run: |
-          cd apps/my-project-e2e
-          npx playwright test
+        run: npx nx e2e my-project-e2e
         continue-on-error: true
       - name: run tests again to generate screenshots
         run: npx nx e2e my-project-e2e
-
 
       - name: try to find where screenshots are stored
         run: |
@@ -127,9 +124,7 @@ jobs:
           find apps/my-project-e2e/src/ -type f -name "*.png" || echo "No screenshots found"
 
       - name: run tests on PR branch
-        run: |
-          cd apps/my-project-e2e
-          npx nx e2e my-project-e2e
+        run: npx nx e2e my-project-e2e
 
     #handle pass or failure
       - name: handle results
