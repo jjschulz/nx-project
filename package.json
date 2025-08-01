@@ -2,9 +2,7 @@
   "name": "@my-project/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {
-    "start:my-project": "nx serve my-project"
-  },
+  "scripts": {},
   "private": true,
   "dependencies": {
     "@angular/common": "~20.1.0",
