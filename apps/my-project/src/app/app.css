@@ -24,4 +24,9 @@ canvas{
 .rectangle {
         border: 1px solid #FF0000;
         position: absolute;
-    }
+}
+#hiddenInput {
+position: absolute;
+opacity: 0; 
+
+}
