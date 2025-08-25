@@ -2,7 +2,6 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NxWelcome } from './nx-welcome';
 import { Hero } from '@my-project/ui';
-import { TouchedChangeEvent } from '@angular/forms';
 
 @Component({
   imports: [NxWelcome, RouterModule, Hero],
@@ -20,6 +19,7 @@ export class App implements AfterViewInit{
   private mode="";
   constructor() {}
 
+  //due to various things this function is unfortunately the largest thing ever
   ngAfterViewInit(): void {
     const canvas = this.canvasRef.nativeElement;
     this.ctx = canvas.getContext("2d")!;
@@ -38,34 +38,84 @@ export class App implements AfterViewInit{
       img.src=URL.createObjectURL(file);
       return img;
     });
-    
+    const img = new Image();
+    img.src = '../red-arrow-2.png';
+    let textX = 0;
+    let textY = 0;
+    let currentText = "";
+    const hiddenInput = document.getElementById("hiddenInput") as HTMLInputElement;
+    const startDrawingMouse = (e: MouseEvent) => this.startDraw(e, canvas);
+    const startDrawingTouch = (e: TouchEvent) => this.startDraw(e, canvas);
+    const stopDrawingMouse = ()=>this.stopDraw(canvas);
+    const drawMouse = (e: MouseEvent)=>this.draw(e, 3, canvas);
+    const drawTouch = (e: TouchEvent)=>this.draw(e, 3, canvas);
+    const arrowListener=(event: MouseEvent)=> {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            this.ctx.drawImage(img, x-50, y-50);
+            console.log('image drawn');
+            this.cpush(canvas)
+        };
+
+    const textListener=function(event: MouseEvent) {
+      textX = event.clientX - canvas.getBoundingClientRect().left;
+      textY = event.clientY - canvas.getBoundingClientRect().top;
+      hiddenInput!.style.left = textX + "px";
+      hiddenInput!.style.top = textY + "px";
+      hiddenInput!.style.width = "100px"; 
+      hiddenInput!.style.height = "20px"; 
+      hiddenInput!.style.opacity = '1'; 
+
+      hiddenInput!.focus();
+      hiddenInput!.value = ''; 
+    };
     const freedrawButton=document.getElementById('freedraw');
     freedrawButton?.addEventListener('click', ()=>{
       console.log('mode:', this.mode);
-      canvas.addEventListener('mousedown', (e) => this.startDraw(e, canvas));
-      canvas.addEventListener('mousemove', (e)=>this.draw(e, 3, canvas));
-      canvas.addEventListener('mouseup', ()=>this.stopDraw(canvas));
-      canvas.addEventListener('mouseleave', ()=>this.stopDraw(canvas));
-      canvas.addEventListener('touchstart', (e) => this.startDraw(e, canvas));
-      canvas.addEventListener('touchmove', (e)=>this.draw(e, 3, canvas));
-      canvas.addEventListener('touchend', ()=>this.stopDraw(canvas));
+      this.removeAllEventListeners(canvas, startDrawingMouse, startDrawingTouch, stopDrawingMouse, drawMouse, drawTouch, arrowListener, textListener);
+      canvas.addEventListener('mousedown', startDrawingMouse);
+      canvas.addEventListener('mousemove', drawMouse);
+      canvas.addEventListener('mouseup', stopDrawingMouse);
+      canvas.addEventListener('mouseleave', stopDrawingMouse);
+      canvas.addEventListener('touchstart', startDrawingTouch);
+      canvas.addEventListener('touchmove', drawTouch);
+      canvas.addEventListener('touchend', stopDrawingMouse);
     });
     ////////////////////////
 
     const arrowButton=document.getElementById('arrow');
-    arrowButton?.addEventListener('click',(e)=>{
-      this.addArrow(this.ctx,e);
+    arrowButton?.addEventListener('click',()=>{
+      this.removeAllEventListeners(canvas, startDrawingMouse, startDrawingTouch, stopDrawingMouse, drawMouse, drawTouch, arrowListener, textListener);
+      // img.onload = ()=> {
+        canvas.addEventListener('click', arrowListener);
+    // };
+      // this.addArrow(this.ctx, arrowListener, img);
     });
-
-
     ///////////////////////
 
     const textButton=document.getElementById('text');
     textButton?.addEventListener('click',()=>{
-        this.addText(this.ctx);
+      this.removeAllEventListeners(canvas, startDrawingMouse, startDrawingTouch, stopDrawingMouse, drawMouse, drawTouch, arrowListener, textListener);
+      canvas.addEventListener("click", textListener);
+
+      hiddenInput!.addEventListener("input", ()=> {
+        currentText = hiddenInput!.value;
+        this.ctx.font = "20px Arial";
+        this.ctx.fillStyle = "black";
+        this.ctx.fillText(currentText, textX, textY + 15); 
+      });
+
+      hiddenInput!.addEventListener("keydown", (event)=> {
+        if (event.key === "Enter") {
+          hiddenInput.style.opacity = '0';
+          hiddenInput!.blur(); 
+          this.cpush(canvas);
+        }
+      });
+        // this.addText(this.ctx, textListener);
     });
-
-
     ///////////////////////
 
     const saveButton=document.getElementById('saveButton');
@@ -79,6 +129,14 @@ export class App implements AfterViewInit{
     const redoButton=document.getElementById('redoButton');
     redoButton?.addEventListener('click', ()=>{
       this.redo(this.ctx);
+    });
+    const saveResized=document.getElementById('saveResized');
+    saveResized?.addEventListener('click', ()=>{
+      this.saveResized(canvas);
+    });
+    const saveOverlay=document.getElementById('saveOverlay');
+    saveOverlay?.addEventListener('click', ()=>{
+      this.saveAsOverlay(canvas);
     });
   }
 
@@ -136,8 +194,80 @@ export class App implements AfterViewInit{
 
   }
 
-  saveAsOverlay(canvas:any){
-    //save just the drawings and not the image
+  saveAsOverlay(canvas: HTMLCanvasElement) {
+    if (this.pushArray.length < 2) {
+        console.error('No drawings to save as overlay.');
+        return;
+    }
+    const backgroundPromise = new Promise(resolve => {
+        const bgImg = new Image();
+        bgImg.onload = () => resolve(bgImg);
+        bgImg.src = this.pushArray[0];
+    });
+    const finalPromise = new Promise(resolve => {
+        const finalImg = new Image();
+        finalImg.onload = () => resolve(finalImg);
+        finalImg.src = this.pushArray[this.step];
+    });
+    Promise.all([backgroundPromise, finalPromise]).then(([bgImg, finalImg]) => {
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const tempCtx = tempCanvas.getContext('2d')!;
+        const bgCanvas = document.createElement('canvas');
+        bgCanvas.width = canvas.width;
+        bgCanvas.height = canvas.height;
+        const bgCtx = bgCanvas.getContext('2d')!;
+        bgCtx.drawImage(bgImg as CanvasImageSource, 0, 0);
+        const bgData = bgCtx.getImageData(0, 0, canvas.width, canvas.height).data;
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = canvas.width;
+        finalCanvas.height = canvas.height;
+        const finalCtx = finalCanvas.getContext('2d')!;
+        finalCtx.drawImage(finalImg as CanvasImageSource, 0, 0);
+        const finalData = finalCtx.getImageData(0, 0, canvas.width, canvas.height);
+        const finalPixels = finalData.data;
+        for (let i = 0; i < finalPixels.length; i += 4) {
+            if (
+                finalPixels[i] === bgData[i] &&
+                finalPixels[i+1] === bgData[i+1] &&
+                finalPixels[i+2] === bgData[i+2] &&
+                finalPixels[i+3] === bgData[i+3]
+            ) {
+                finalPixels[i+3] = 0;
+            }
+        }
+        tempCtx.putImageData(finalData, 0, 0);
+        const dataurl = tempCanvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataurl;
+        link.download = 'overlay.png';
+        link.click();
+    });
+}
+
+  saveResized(canvas:any){
+    //save scaled image
+    const imgWidthInput = document.getElementById('imgWidth') as HTMLInputElement;
+    const imgHeightInput = document.getElementById('imgHeight') as HTMLInputElement;
+    const newWidth = parseInt(imgWidthInput.value);
+    const newHeight = parseInt(imgHeightInput.value);
+
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = newWidth;
+    tempCanvas.height = newHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+
+    const canvasPic= new Image();
+    canvasPic.src=this.pushArray[this.step];
+    canvasPic.onload = () => {
+      tempCtx!.drawImage(canvasPic, 0, 0, newWidth, newHeight);
+      const dataURL = tempCanvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = 'resized_image.png'; 
+      link.href = dataURL;
+      link.click();
+    };
   }
 
   cpush(canvas:HTMLCanvasElement){
@@ -173,65 +303,16 @@ export class App implements AfterViewInit{
     }
   }
 
-  addArrow(ctx: CanvasRenderingContext2D, e:MouseEvent){
-    const img = new Image();
-    img.src = '../red-arrow-2.png';
-    img.onload = ()=> {
-        ctx.canvas.addEventListener('click', (event)=> {
-            const rect = ctx.canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-
-            ctx.drawImage(img, x-50, y-50);
-            console.log('image drawn');
-            this.cpush(ctx.canvas)
-        });
-    };
-  }
-
-  addText(ctx: CanvasRenderingContext2D){
-    let currentText = "";
-    let textX = 0;
-    let textY = 0;
-    const hiddenInput = document.getElementById("hiddenInput") as HTMLInputElement;
-
-    ctx.canvas.addEventListener("click", function(event) {
-      textX = event.clientX - ctx.canvas.getBoundingClientRect().left;
-      textY = event.clientY - ctx.canvas.getBoundingClientRect().top;
-      hiddenInput!.style.left = textX + "px";
-      hiddenInput!.style.top = textY + "px";
-      hiddenInput!.style.width = "100px"; 
-      hiddenInput!.style.height = "20px"; 
-      hiddenInput!.style.opacity = '1'; 
-
-      hiddenInput!.focus();
-      hiddenInput!.value = ''; 
-    });
-
-    hiddenInput!.addEventListener("input", ()=> {
-      currentText = hiddenInput!.value;
-      this.ctx.font = "20px Arial";
-      this.ctx.fillStyle = "black";
-      this.ctx.fillText(currentText, textX, textY + 15); 
-    });
-
-    hiddenInput!.addEventListener("keydown", (event)=> {
-      if (event.key === "Enter") {
-        hiddenInput.style.opacity = '0';
-        hiddenInput!.blur(); 
-        this.cpush(ctx.canvas);
-      }
-    });
-  }
-
-  removeAllEventListeners(canvas: any){
-    canvas.removeEventListener('mousedown', (e: MouseEvent) => this.startDraw(e, canvas));
-    canvas.removeEventListener('mousemove', (e: MouseEvent)=>this.draw(e, 3, canvas));
-    canvas.removeEventListener('mouseup', ()=>this.stopDraw(canvas));
-    canvas.removeEventListener('mouseleave', ()=>this.stopDraw(canvas));
-    canvas.removeEventListener('touchstart', (e:TouchEvent) => this.startDraw(e, canvas));
-    canvas.removeEventListener('touchmove', (e:TouchEvent)=>this.draw(e, 3, canvas));
-    canvas.removeEventListener('touchend', ()=>this.stopDraw(canvas));
+  removeAllEventListeners(canvas: any, startDrawingMouse: any, startDrawingTouch: any, stopDrawingMouse: any, drawMouse:any, drawTouch:any, arrowListener: any, textListener: any){
+    canvas.removeEventListener('mousedown', startDrawingMouse);
+    canvas.removeEventListener('mousemove', drawMouse);
+    canvas.removeEventListener('mouseup', stopDrawingMouse);
+    canvas.removeEventListener('mouseleave', stopDrawingMouse);
+    canvas.removeEventListener('touchstart', startDrawingTouch);
+    canvas.removeEventListener('touchmove', drawTouch);
+    canvas.removeEventListener('touchend', stopDrawingMouse);
+    canvas.removeEventListener('click', arrowListener);
+    canvas.removeEventListener('click', textListener);
 
   }
 
